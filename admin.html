@@ -185,7 +185,7 @@
                 <div class="enrollment-container">
                     <div class="enrollment-form-card">
                         <h2>🎓 Nueva Matriculación</h2>
-                        <form id="enrollmentForm" onsubmit="enrollStudent(event)">
+                        <form id="enrollmentForm" onsubmit="return false;">
                             <div class="form-group">
                                 <label>Seleccionar Estudiante</label>
                                 <select id="enrollStudent" required>
@@ -206,7 +206,7 @@
                                 <label>Notas adicionales</label>
                                 <textarea id="enrollNotes" rows="2" placeholder="Observaciones opcionales"></textarea>
                             </div>
-                            <button type="submit" class="btn-primary btn-full">
+                            <button type="button" class="btn-primary btn-full" onclick="enrollStudent()">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
                                     <polyline points="17 11 19 13 23 9"></polyline>
                                 </svg>
