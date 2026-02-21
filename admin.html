@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Aula Virtual</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="admin-page">
+    <nav class="navbar admin-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="mini-logo">⚙️</div>
+                <span>Panel Admin</span>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="dashboard.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span>Dashboard</span>
+                </a></li>
+                <li><button class="nav-link logout-btn" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Salir</span>
+                </button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="admin-header">
+            <h1>Panel de Administración</h1>
+            <p>Gestiona usuarios y cursos de la plataforma</p>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Usuarios
+            </button>
+            <button class="tab-btn" data-tab="courses">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                Cursos
+            </button>
+            <button class="tab-btn" data-tab="enrollments">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <polyline points="17 11 19 13 23 9"></polyline>
+                </svg>
+                Matricular
+            </button>
+            <button class="tab-btn" data-tab="stats">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Estadísticas
+            </button>
+        </div>
+
+        <div class="admin-content">
+            <div id="users-tab" class="tab-content active">
+                <div class="action-bar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="searchUsers" placeholder="Buscar usuarios..." oninput="filterUsers()">
+                    </div>
+                    <button class="btn-add" onclick="openUserModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Nuevo Usuario
+                    </button>
+                </div>
+
+                <div class="users-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Fecha Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="courses-tab" class="tab-content">
+                <div class="action-bar">
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="M21 21l-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="searchAdminCourses" placeholder="Buscar cursos..." oninput="filterAdminCourses()">
+                    </div>
+                    <button class="btn-add" onclick="openCourseModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Nuevo Curso
+                    </button>
+                </div>
+
+                <div class="courses-admin-grid" id="coursesAdminGrid">
+                </div>
+            </div>
+
+            <div id="stats-tab" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 id="statUsers">0</h3>
+                            <p>Usuarios Registrados</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-info">
+                            <h3 id="statCourses">0</h3>
+                            <p>Cursos Disponibles</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎓</div>
+                        <div class="stat-info">
+                            <h3 id="statEnrollments">0</h3>
+                            <p>Matriculaciones</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👨‍💼</div>
+                        <div class="stat-info">
+                            <h3 id="statAdmins">0</h3>
+                            <p>Administradores</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2>Actividad Reciente</h2>
+                    <div class="activity-timeline" id="activityTimeline">
+                        <div class="empty-state">
+                            <p>No hay actividad reciente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="enrollments-tab" class="tab-content">
+                <div class="enrollment-container">
+                    <div class="enrollment-form-card">
+                        <h2>🎓 Nueva Matriculación</h2>
+                        <form id="enrollmentForm" onsubmit="enrollStudent(event)">
+                            <div class="form-group">
+                                <label>Seleccionar Estudiante</label>
+                                <select id="enrollStudent" required>
+                                    <option value="">-- Seleccionar estudiante --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Seleccionar Curso</label>
+                                <select id="enrollCourse" required>
+                                    <option value="">-- Seleccionar curso --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Inicio</label>
+                                <input type="date" id="enrollStartDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Notas adicionales</label>
+                                <textarea id="enrollNotes" rows="2" placeholder="Observaciones opcionales"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
+                                    <polyline points="17 11 19 13 23 9"></polyline>
+                                </svg>
+                                Matricular Estudiante
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="enrollments-list-card">
+                        <div class="enrollments-header">
+                            <h2>📋 Matriculaciones Activas</h2>
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="M21 21l-4.35-4.35"></path>
+                                </svg>
+                                <input type="text" id="searchEnrollments" placeholder="Buscar..." oninput="filterEnrollments()">
+                            </div>
+                        </div>
+                        <div class="enrollments-grid" id="enrollmentsGrid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="userModal" class="modal">
+        <div class="modal-content modal-form">
+            <button class="modal-close" onclick="closeModal('userModal')">&times;</button>
+            <div class="modal-header">
+                <h2 id="userModalTitle">Nuevo Usuario</h2>
+            </div>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label>Nombre de Usuario</label>
+                    <input type="text" id="newUsername" required minlength="3" placeholder="Ingrese usuario">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="newEmail" placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group" id="passwordGroup">
+                    <label>Contraseña</label>
+                    <input type="password" id="newUserPassword" minlength="4" placeholder="Mínimo 4 caracteres">
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select id="newRole">
+                        <option value="user">Estudiante</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('userModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="courseFormModal" class="modal">
+        <div class="modal-content modal-form modal-large">
+            <button class="modal-close" onclick="closeModal('courseFormModal')">&times;</button>
+            <div class="modal-header">
+                <h2 id="courseModalTitle">Nuevo Curso</h2>
+            </div>
+            <form id="courseForm" onsubmit="saveCourse(event)">
+                <input type="hidden" id="editCourseId">
+                <div class="form-group">
+                    <label>Nombre del Curso</label>
+                    <input type="text" id="courseName" required placeholder="Ej: JavaScript Avanzado">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="courseDescription" rows="3" placeholder="Describe el contenido del curso"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="courseCategory" required>
+                            <option value="">Seleccionar</option>
+                            <option value="programacion">Programación</option>
+                            <option value="diseño">Diseño</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="negocios">Negocios</option>
+                            <option value="idiomas">Idiomas</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Icono (Emoji)</label>
+                        <input type="text" id="courseIcon" placeholder="📚" maxlength="2">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Link de Google Drive</label>
+                    <input type="url" id="courseLink" required placeholder="https://drive.google.com/...">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('courseFormModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Curso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal">
+        <div class="modal-content modal-confirm">
+            <div class="confirm-icon">⚠️</div>
+            <h2>¿Estás seguro?</h2>
+            <p id="confirmMessage">Esta acción no se puede deshacer</p>
+            <div class="confirm-actions">
+                <button class="btn-secondary" onclick="closeModal('confirmModal')">Cancelar</button>
+                <button class="btn-danger" id="confirmBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="enrollmentModal" class="modal">
+        <div class="modal-content modal-form modal-large">
+            <button class="modal-close" onclick="closeModal('enrollmentModal')">&times;</button>
+            <div class="modal-header">
+                <h2>📋 Detalles de Matriculación</h2>
+            </div>
+            <div class="modal-body" id="enrollmentModalBody">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('enrollmentModal')">Cerrar</button>
+                <button class="btn-primary" onclick="printEnrollmentSheet()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Imprimir Ficha
+                </button>
+                <button class="btn-success" onclick="sendEnrollmentEmail()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    Enviar por Email
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="printSheet" class="print-sheet">
+        <div class="sheet-header">
+            <div class="sheet-logo">🎓</div>
+            <div class="sheet-title">
+                <h1>AULA VIRTUAL</h1>
+                <p>Plataforma Educativa</p>
+            </div>
+        </div>
+        <div class="sheet-content">
+            <h2>FICHA DE INSCRIPCIÓN</h2>
+            <div class="sheet-info" id="sheetInfo">
+            </div>
+        </div>
+        <div class="sheet-footer">
+            <p>Documento generado automáticamente - Aula Virtual © 2024</p>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+        initAdmin();
+    </script>
+</body>
+</html>
