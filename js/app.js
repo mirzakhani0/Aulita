@@ -1,4 +1,47 @@
-const DB={init:function(){if(!localStorage.getItem('aulaUsers')){const d=[{id:1,username:'admin',password:'admin123',email:'admin@aula.com',role:'admin',active:true,createdAt:new Date().toISOString()},{id:2,username:'estudiante',password:'estudiante123',email:'estudiante@aula.com',role:'user',active:true,createdAt:new Date().toISOString()}];localStorage.setItem('aulaUsers',JSON.stringify(d))}if(!localStorage.getItem('aulaCourses')){const c=[{id:1,name:'JavaScript Moderno',description:'Aprende ES6+, async/await, modulos y mas',category:'programacion',icon:'🚀',link:'https://drive.google.com',createdAt:new Date().toISOString()},{id:2,name:'Diseño UI/UX',description:'Principios de diseño y experiencia de usuario',category:'diseño',icon:'🎨',link:'https://drive.google.com',createdAt:new Date().toISOString()},{id:3,name:'Marketing Digital',description:'Estrategias de marketing para redes sociales',category:'marketing',icon:'📈',link:'https://drive.google.com',createdAt:new Date().toISOString()}];localStorage.setItem('aulaCourses',JSON.stringify(c))}if(!localStorage.getItem('aulaActivity')){localStorage.setItem('aulaActivity',JSON.stringify([]))}if(!localStorage.getItem('aulaEnrollments')){localStorage.setItem('aulaEnrollments',JSON.stringify([]))}},getUsers:()=>JSON.parse(localStorage.getItem('aulaUsers')||'[]'),setUsers:u=>localStorage.setItem('aulaUsers',JSON.stringify(u)),getCourses:()=>JSON.parse(localStorage.getItem('aulaCourses')||'[]'),setCourses:c=>localStorage.setItem('aulaCourses',JSON.stringify(c)),getActivity:()=>JSON.parse(localStorage.getItem('aulaActivity')||'[]'),addActivity:function(a){const act=this.getActivity();act.unshift({action:a,date:new Date().toISOString()});if(act.length>20)act.pop();localStorage.setItem('aulaActivity',JSON.stringify(act))},getEnrollments:()=>JSON.parse(localStorage.getItem('aulaEnrollments')||'[]'),setEnrollments:e=>localStorage.setItem('aulaEnrollments',JSON.stringify(e))};
+// AULA VIRTUAL - app.js v2.0
+console.log('app.js cargado - version 2.0');
+
+const DB={
+    init:function(){
+        console.log('DB.init ejecutado');
+        if(!localStorage.getItem('aulaUsers')){
+            const defaultUsers=[
+                {id:1,username:'admin',password:'admin123',email:'admin@aula.com',role:'admin',active:true,createdAt:new Date().toISOString()},
+                {id:2,username:'estudiante',password:'estudiante123',email:'estudiante@aula.com',role:'user',active:true,createdAt:new Date().toISOString()}
+            ];
+            localStorage.setItem('aulaUsers',JSON.stringify(defaultUsers));
+            console.log('Usuarios por defecto creados');
+        }
+        if(!localStorage.getItem('aulaCourses')){
+            const defaultCourses=[
+                {id:1,name:'JavaScript Moderno',description:'Aprende ES6+, async/await, modulos y mas',category:'programacion',icon:'🚀',link:'https://drive.google.com',createdAt:new Date().toISOString()},
+                {id:2,name:'Diseño UI/UX',description:'Principios de diseño',category:'diseño',icon:'🎨',link:'https://drive.google.com',createdAt:new Date().toISOString()},
+                {id:3,name:'Marketing Digital',description:'Estrategias de marketing',category:'marketing',icon:'📈',link:'https://drive.google.com',createdAt:new Date().toISOString()}
+            ];
+            localStorage.setItem('aulaCourses',JSON.stringify(defaultCourses));
+            console.log('Cursos por defecto creados');
+        }
+        if(!localStorage.getItem('aulaActivity')){
+            localStorage.setItem('aulaActivity',JSON.stringify([]));
+        }
+        if(!localStorage.getItem('aulaEnrollments')){
+            localStorage.setItem('aulaEnrollments',JSON.stringify([]));
+        }
+    },
+    getUsers:function(){return JSON.parse(localStorage.getItem('aulaUsers')||'[]')},
+    setUsers:function(u){localStorage.setItem('aulaUsers',JSON.stringify(u))},
+    getCourses:function(){return JSON.parse(localStorage.getItem('aulaCourses')||'[]')},
+    setCourses:function(c){localStorage.setItem('aulaCourses',JSON.stringify(c))},
+    getActivity:function(){return JSON.parse(localStorage.getItem('aulaActivity')||'[]')},
+    addActivity:function(a){
+        var act=this.getActivity();
+        act.unshift({action:a,date:new Date().toISOString()});
+        if(act.length>20)act.pop();
+        localStorage.setItem('aulaActivity',JSON.stringify(act));
+    },
+    getEnrollments:function(){return JSON.parse(localStorage.getItem('aulaEnrollments')||'[]')},
+    setEnrollments:function(e){localStorage.setItem('aulaEnrollments',JSON.stringify(e))}
+};
 function getSession(){return JSON.parse(localStorage.getItem('aulaSession')||'null')}
 function setSession(u){localStorage.setItem('aulaSession',JSON.stringify(u))}
 function clearSession(){localStorage.removeItem('aulaSession')}
@@ -44,7 +87,97 @@ let currentEnrollmentId=null;
 
 function loadEnrollmentSelects(){const users=DB.getUsers().filter(function(u){return u.role==='user'});const courses=DB.getCourses();console.log('Estudiantes encontrados:',users.length);console.log('Cursos encontrados:',courses.length);const studentSelect=document.getElementById('enrollStudent');const courseSelect=document.getElementById('enrollCourse');if(!studentSelect||!courseSelect){console.log('ERROR: No se encontraron los selects');return}if(users.length===0){studentSelect.innerHTML='<option value="">No hay estudiantes registrados</option>'}else{let options='<option value="">-- Seleccionar estudiante --</option>';for(let i=0;i<users.length;i++){options+='<option value="'+users[i].id+'">'+users[i].username+(users[i].email?' ('+users[i].email+')':'')+'</option>'}studentSelect.innerHTML=options}if(courses.length===0){courseSelect.innerHTML='<option value="">No hay cursos disponibles</option>'}else{let options='<option value="">-- Seleccionar curso --</option>';for(let i=0;i<courses.length;i++){options+='<option value="'+courses[i].id+'">'+(courses[i].icon||'📚')+' '+courses[i].name+'</option>'}courseSelect.innerHTML=options}console.log('Selects cargados correctamente')}
 
-function enrollStudent(){alert('Botón funciona!');console.log('=== INICIANDO MATRICULACIÓN ===');const studentSelect=document.getElementById('enrollStudent');const courseSelect=document.getElementById('enrollCourse');const startDateInput=document.getElementById('enrollStartDate');const notesInput=document.getElementById('enrollNotes');if(!studentSelect){alert('Error: No se encuentra select de estudiante');return}if(!courseSelect){alert('Error: No se encuentra select de curso');return}const studentId=parseInt(studentSelect.value);const courseId=parseInt(courseSelect.value);const startDate=startDateInput?startDateInput.value:'';const notes=notesInput?notesInput.value.trim():'';console.log('Valores: studentId='+studentId+', courseId='+courseId+', startDate='+startDate);if(!studentId||isNaN(studentId)||studentId===0){alert('Por favor selecciona un estudiante');return}if(!courseId||isNaN(courseId)||courseId===0){alert('Por favor selecciona un curso');return}if(!startDate){alert('Por favor ingresa una fecha de inicio');return}const enrollments=DB.getEnrollments();const existing=enrollments.find(function(en){return en.studentId===studentId&&en.courseId===courseId&&en.status!=='cancelled'});if(existing){alert('Este estudiante ya está matriculado en este curso');return}const users=DB.getUsers();const courses=DB.getCourses();const student=users.find(function(u){return u.id===studentId});const course=courses.find(function(c){return c.id===courseId});if(!student){alert('Error: Estudiante no encontrado');return}if(!course){alert('Error: Curso no encontrado');return}const newEnrollment={id:Date.now(),studentId:studentId,courseId:courseId,studentName:student.username,studentEmail:student.email||'',courseName:course.name,courseCategory:course.category,startDate:startDate,enrollmentDate:new Date().toISOString(),notes:notes,status:'active'};enrollments.push(newEnrollment);DB.setEnrollments(enrollments);DB.addActivity(student.username+' matriculado en '+course.name);alert('¡Estudiante matriculado exitosamente!');const formDiv=document.getElementById('enrollmentFormDiv');if(formDiv){const selects=formDiv.querySelectorAll('select, input');for(let i=0;i<selects.length;i++){if(selects[i].type!=='date')selects[i].value=''}const textarea=formDiv.querySelector('textarea');if(textarea)textarea.value=''}const today=new Date().toISOString().split('T')[0];if(startDateInput)startDateInput.value=today;renderEnrollments();updateStats()}
+function enrollStudent(){
+    console.log('=== enrollStudent() EJECUTADO ===');
+    alert('FUNCION enrollStudent EJECUTADA!');
+    
+    var studentSelect=document.getElementById('enrollStudent');
+    var courseSelect=document.getElementById('enrollCourse');
+    var startDateInput=document.getElementById('enrollStartDate');
+    var notesInput=document.getElementById('enrollNotes');
+    
+    if(!studentSelect){
+        alert('ERROR: No se encuentra el select de estudiante');
+        return;
+    }
+    if(!courseSelect){
+        alert('ERROR: No se encuentra el select de curso');
+        return;
+    }
+    
+    var studentId=parseInt(studentSelect.value);
+    var courseId=parseInt(courseSelect.value);
+    var startDate=startDateInput?startDateInput.value:'';
+    var notes=notesInput?notesInput.value.trim():'';
+    
+    console.log('studentId='+studentId+', courseId='+courseId+', startDate='+startDate);
+    
+    if(!studentId||isNaN(studentId)||studentId===0){
+        alert('Por favor selecciona un estudiante');
+        return;
+    }
+    if(!courseId||isNaN(courseId)||courseId===0){
+        alert('Por favor selecciona un curso');
+        return;
+    }
+    if(!startDate){
+        alert('Por favor ingresa una fecha de inicio');
+        return;
+    }
+    
+    var enrollments=DB.getEnrollments();
+    var existing=enrollments.find(function(en){
+        return en.studentId===studentId&&en.courseId===courseId&&en.status!=='cancelled';
+    });
+    
+    if(existing){
+        alert('Este estudiante ya está matriculado en este curso');
+        return;
+    }
+    
+    var users=DB.getUsers();
+    var courses=DB.getCourses();
+    var student=users.find(function(u){return u.id===studentId});
+    var course=courses.find(function(c){return c.id===courseId});
+    
+    if(!student){
+        alert('Error: Estudiante no encontrado');
+        return;
+    }
+    if(!course){
+        alert('Error: Curso no encontrado');
+        return;
+    }
+    
+    var newEnrollment={
+        id:Date.now(),
+        studentId:studentId,
+        courseId:courseId,
+        studentName:student.username,
+        studentEmail:student.email||'',
+        courseName:course.name,
+        courseCategory:course.category,
+        startDate:startDate,
+        enrollmentDate:new Date().toISOString(),
+        notes:notes,
+        status:'active'
+    };
+    
+    enrollments.push(newEnrollment);
+    DB.setEnrollments(enrollments);
+    DB.addActivity(student.username+' matriculado en '+course.name);
+    
+    alert('¡Estudiante '+student.username+' matriculado exitosamente en '+course.name+'!');
+    
+    var today=new Date().toISOString().split('T')[0];
+    if(startDateInput)startDateInput.value=today;
+    if(studentSelect)studentSelect.value='';
+    if(courseSelect)courseSelect.value='';
+    if(notesInput)notesInput.value='';
+    
+    renderEnrollments();
+    updateStats();
+}
 
 function renderEnrollments(){console.log('=== RENDER ENROLLMENTS ===');const allEnrollments=DB.getEnrollments();console.log('Todas las matriculaciones:',allEnrollments);const enrollments=allEnrollments.filter(function(e){return e.status!=='cancelled'});console.log('Matriculaciones no canceladas:',enrollments);const grid=document.getElementById('enrollmentsGrid');if(!grid){console.log('ERROR: Grid element no encontrado');return}if(enrollments.length===0){console.log('No hay matriculaciones, mostrando estado vacío');grid.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><p>No hay matriculaciones registradas</p></div>';return}const courses=DB.getCourses();console.log('Cursos disponibles:',courses);let html='';for(let i=0;i<enrollments.length;i++){const e=enrollments[i];const course=courses.find(function(c){return c.id===e.courseId});const icon=course?course.icon:'📚';const isActive=e.status==='active';const statusClass=isActive?'status-active':'status-suspended';const statusText=isActive?'Activo':'Suspendido';const toggleBtn=isActive?'<button class="btn-sm btn-cancel" onclick="toggleEnrollmentAccess('+e.id+',false)">🚫 Quitar Acceso</button>':'<button class="btn-sm btn-view" onclick="toggleEnrollmentAccess('+e.id+',true)">✅ Dar Acceso</button>';html+='<div class="enrollment-card"><div class="enrollment-card-header"><div class="enrollment-avatar">'+e.studentName.charAt(0).toUpperCase()+'</div><div class="enrollment-card-info"><h4>'+e.studentName+'</h4><span>'+(e.studentEmail||'Sin email')+'</span></div></div><div class="enrollment-card-body"><p><strong>Curso:</strong> '+icon+' '+e.courseName+'</p><p><strong>Inicio:</strong> '+new Date(e.startDate).toLocaleDateString('es-ES')+'</p><p><strong>Estado:</strong> <span class="status-badge '+statusClass+'">'+statusText+'</span></p></div><div class="enrollment-card-footer"><button class="btn-sm btn-view" onclick="viewEnrollment('+e.id+')">👁️ Ver</button>'+toggleBtn+'<button class="btn-sm btn-cancel" onclick="cancelEnrollment('+e.id+')">✖️ Eliminar</button></div></div>'}grid.innerHTML=html;console.log('Renderizadas',enrollments.length,'matriculaciones')}
 

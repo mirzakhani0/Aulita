@@ -206,7 +206,7 @@
                                 <label>Notas adicionales</label>
                                 <textarea id="enrollNotes" rows="2" placeholder="Observaciones opcionales"></textarea>
                             </div>
-                            <button type="button" class="btn-primary btn-full" id="btnEnrollStudent">
+                            <button type="button" class="btn-primary btn-full" id="btnEnrollStudent" onclick="enrollStudent()">
                                 ✅ Matricular Estudiante
                             </button>
                         </div>
@@ -373,9 +373,14 @@
 
     <div id="toast" class="toast"></div>
 
-    <script src="js/app.js"></script>
+    <script src="js/app.js?v=3"></script>
     <script>
-        initAdmin();
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM cargado, iniciando admin...');
+            setTimeout(function() {
+                initAdmin();
+            }, 100);
+        });
     </script>
 </body>
 </html>
