@@ -192,3 +192,69 @@ function cancelEnrollment(id){document.getElementById('confirmMessage').textCont
 function printEnrollmentSheet(){if(!currentEnrollmentId)return;const enrollments=DB.getEnrollments();const enrollment=enrollments.find(function(e){return e.id===currentEnrollmentId});if(!enrollment)return;const courses=DB.getCourses();const course=courses.find(function(c){return c.id===enrollment.courseId});const icon=course?course.icon:'📚';const users=DB.getUsers();const student=users.find(function(u){return u.id===enrollment.studentId});const studentPassword=student?student.password:'-';const sheetInfo=document.getElementById('sheetInfo');if(!sheetInfo)return;let notesRow='';if(enrollment.notes){notesRow='<div class="sheet-row"><div class="sheet-label">Observaciones</div><div class="sheet-value">'+enrollment.notes+'</div></div>'}sheetInfo.innerHTML='<div class="sheet-row"><div class="sheet-label">Nº de Matriculación</div><div class="sheet-value">#'+enrollment.id+'</div></div><div class="sheet-row"><div class="sheet-label">Fecha de Matriculación</div><div class="sheet-value">'+new Date(enrollment.enrollmentDate).toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="sheet-row"><div class="sheet-label">Nombre del Estudiante</div><div class="sheet-value">'+enrollment.studentName.toUpperCase()+'</div></div><div class="sheet-row"><div class="sheet-label">Usuario de Acceso</div><div class="sheet-value">'+enrollment.studentName.toLowerCase()+'</div></div><div class="sheet-row"><div class="sheet-label">Contraseña de Acceso</div><div class="sheet-value" style="font-weight:bold;color:#6366f1">'+studentPassword+'</div></div><div class="sheet-row"><div class="sheet-label">Email</div><div class="sheet-value">'+(enrollment.studentEmail||'-')+'</div></div><div class="sheet-row"><div class="sheet-label">Curso</div><div class="sheet-value">'+icon+' '+enrollment.courseName+'</div></div><div class="sheet-row"><div class="sheet-label">Categoría</div><div class="sheet-value">'+getCategoryName(enrollment.courseCategory)+'</div></div><div class="sheet-row"><div class="sheet-label">Fecha de Inicio</div><div class="sheet-value">'+new Date(enrollment.startDate).toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+'</div></div><div class="sheet-row"><div class="sheet-label">Estado</div><div class="sheet-value">ACTIVO</div></div>'+notesRow;const printSheet=document.getElementById('printSheet');if(printSheet){printSheet.classList.add('active');window.print();setTimeout(function(){printSheet.classList.remove('active')},100)}}
 
 function sendEnrollmentEmail(){if(!currentEnrollmentId)return;const enrollments=DB.getEnrollments();const enrollment=enrollments.find(function(e){return e.id===currentEnrollmentId});if(!enrollment)return;if(!enrollment.studentEmail){showToast('El estudiante no tiene email registrado','error');return}const courses=DB.getCourses();const course=courses.find(function(c){return c.id===enrollment.courseId});const icon=course?course.icon:'📚';const users=DB.getUsers();const student=users.find(function(u){return u.id===enrollment.studentId});const studentUsername=student?student.username:enrollment.studentName.toLowerCase();const studentPassword=student?student.password:'-';const subject=encodeURIComponent('Confirmación de Matriculación - Aula Virtual');const body=encodeURIComponent('¡Hola '+enrollment.studentName+'!\n\nTe confirmamos tu matriculación en el curso:\n\n📚 Curso: '+icon+' '+enrollment.courseName+'\n📅 Fecha de inicio: '+new Date(enrollment.startDate).toLocaleDateString('es-ES')+'\n🆔 Nº de matriculación: #'+enrollment.id+'\n\n━━━━━━━━━━━━━━━━━━━━━━━━\n tus DATOS DE ACCESO:\n━━━━━━━━━━━━━━━━━━━━━━━━\n👤 Usuario: '+studentUsername+'\n🔑 Contraseña: '+studentPassword+'\n━━━━━━━━━━━━━━━━━━━━━━━━\n\nPuedes acceder al curso desde tu panel de estudiante.\n\n¡Bienvenido/a!\n\nEquipo de Aula Virtual');window.open('mailto:'+enrollment.studentEmail+'?subject='+subject+'&body='+body);DB.addActivity('Ficha de inscripción enviada a '+enrollment.studentName);showToast('Cliente de correo abierto')}
+
+function openRecoverModal(){
+    DB.init();
+    document.getElementById('recoverModal').classList.add('active');
+    document.getElementById('recoverEmail').value='';
+    document.getElementById('recoverMessage').className='message';
+    document.getElementById('recoverMessage').textContent='';
+}
+
+function recoverPassword(){
+    var emailInput=document.getElementById('recoverEmail');
+    var message=document.getElementById('recoverMessage');
+    
+    if(!emailInput){
+        alert('Error: No se encuentra el campo de email');
+        return;
+    }
+    
+    var email=emailInput.value.trim().toLowerCase();
+    
+    if(!email){
+        message.textContent='Por favor ingresa tu correo electrónico';
+        message.className='message error';
+        return;
+    }
+    
+    var users=DB.getUsers();
+    var admin=users.find(function(u){
+        return u.role==='admin' && u.email && u.email.toLowerCase()===email;
+    });
+    
+    if(!admin){
+        message.textContent='Este correo no corresponde al administrador';
+        message.className='message error';
+        return;
+    }
+    
+    var subject=encodeURIComponent('Recuperación de Contraseña - Aula Virtual');
+    var body=encodeURIComponent(
+        '🔐 RECUPERACIÓN DE CONTRASEÑA\n'+
+        '══════════════════════════════\n\n'+
+        'Hola '+admin.username+',\n\n'+
+        'Has solicitado recuperar tu contraseña de acceso.\n\n'+
+        '━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+        'TUS DATOS DE ACCESO:\n'+
+        '━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+        '👤 Usuario: '+admin.username+'\n'+
+        '🔑 Contraseña: '+admin.password+'\n'+
+        '━━━━━━━━━━━━━━━━━━━━━━━━\n\n'+
+        'Por seguridad, te recomendamos cambiar tu contraseña después de iniciar sesión.\n\n'+
+        'Si no solicitaste esta recuperación, ignora este mensaje.\n\n'+
+        'Saludos,\n'+
+        'Equipo de Aula Virtual'
+    );
+    
+    window.open('mailto:'+admin.email+'?subject='+subject+'&body='+body);
+    
+    message.textContent='Se abrirá tu cliente de correo con la información de recuperación';
+    message.className='message success';
+    
+    DB.addActivity('Solicitud de recuperación de contraseña para: '+admin.username);
+    
+    setTimeout(function(){
+        closeModal('recoverModal');
+    },2000);
+}

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aula Virtual - Inicio</title>
-    <link rel="stylesheet" href="css/styles.css?v=6">
+    <link rel="stylesheet" href="css/styles.css?v=8">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body class="login-page">
@@ -79,7 +79,7 @@
             <div id="loginMessage" class="message"></div>
 
             <div class="login-footer">
-                <p>¿Problemas para acceder? Contacta al administrador</p>
+                <p>¿Problemas para acceder? <a href="#" onclick="openRecoverModal(); return false;" class="recover-link">Recuperar contraseña de administrador</a></p>
             </div>
         </div>
 
@@ -102,7 +102,33 @@
         </div>
     </div>
 
-    <script src="js/app.js?v=6"></script>
+    <div id="recoverModal" class="modal">
+        <div class="modal-content modal-form">
+            <button class="modal-close" onclick="closeModal('recoverModal')">&times;</button>
+            <div class="modal-header">
+                <div class="modal-icon">🔐</div>
+                <h2>Recuperar Contraseña</h2>
+            </div>
+            <form id="recoverForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label>Correo electrónico del administrador</label>
+                    <input type="email" id="recoverEmail" placeholder="admin@ejemplo.com" required>
+                </div>
+                <p style="font-size:12px;color:var(--gray);margin-bottom:15px;">
+                    Solo el administrador puede recuperar su contraseña. Si eres estudiante, contacta al administrador.
+                </p>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('recoverModal')">Cancelar</button>
+                    <button type="button" class="btn-primary" onclick="recoverPassword()">Enviar</button>
+                </div>
+            </form>
+            <div id="recoverMessage" class="message"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="js/app.js?v=8"></script>
     <script>
         checkIfLoggedIn();
     </script>
